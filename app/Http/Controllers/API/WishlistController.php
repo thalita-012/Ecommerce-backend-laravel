@@ -13,7 +13,16 @@ class WishlistController extends Controller
      */
     public function index(Request $request)
     {
-        $wishlists = $request->user()->wishlists()->with('product')->get();
+        $wishlists = $request->user()
+            ->wishlists()
+            ->select(['id', 'user_id', 'product_id', 'created_at'])
+            ->with([
+                'product' => function ($query) {
+                    $query->select(['id', 'name', 'slug', 'price', 'image']);
+                },
+            ])
+            ->latest()
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -43,7 +52,11 @@ class WishlistController extends Controller
         }
 
         $wishlist = $request->user()->wishlists()->create($validated);
-        $wishlist->load('product');
+        $wishlist->load([
+            'product' => function ($query) {
+                $query->select(['id', 'name', 'slug', 'price', 'image']);
+            },
+        ]);
 
         return response()->json([
             'success' => true,
@@ -57,12 +70,10 @@ class WishlistController extends Controller
      */
     public function destroy(Wishlist $wishlist, Request $request)
     {
-        if ($wishlist->user_id !== $request->user()->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized',
-            ], 403);
-        }
+        $wishlist = $request->user()
+            ->wishlists()
+            ->whereKey($wishlist->id)
+            ->firstOrFail();
 
         $wishlist->delete();
 
