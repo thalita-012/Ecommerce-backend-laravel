@@ -91,9 +91,9 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($users as $user)
+                @forelse($users as $index =>$user)
                 <tr>
-                    <td class="fw-bold text-dark">#{{ $user->id }}</td>
+                    <td class="fw-bold text-dark">{{ $index+1 }}</td>
                     <td class="fw-bold text-dark">{{ $user->name }}</td>
                     <td class="email-text">{{ $user->email }}</td>
                     <td>

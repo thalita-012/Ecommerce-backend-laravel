@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,7 +66,11 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Order created successfully',
-                'order' => $order->load('items.product'),
+                'order' => $order->load([
+                    'items' => function ($query) {
+                        $query->select(['id', 'order_id', 'product_id', 'quantity', 'price']);
+                    },
+                ]),
             ], 201);
 
         } catch (\Exception $e) {
@@ -85,7 +88,12 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = $request->user()->orders()->with('items.product')->latest()->paginate(10);
+        $orders = $request->user()
+            ->orders()
+            ->select(['id', 'user_id', 'total_price', 'status', 'shipping_address', 'created_at'])
+            ->withCount('items')
+            ->latest()
+            ->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -96,16 +104,20 @@ class OrderController extends Controller
     /**
      * Get order details
      */
-    public function show(Order $order, Request $request)
+    public function show(Request $request, Order $order)
     {
-        if ($order->user_id !== $request->user()->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized',
-            ], 403);
-        }
-
-        $order->load('items.product', 'user');
+        $order = $request->user()
+            ->orders()
+            ->with([
+                'items' => function ($query) {
+                    $query->select(['id', 'order_id', 'product_id', 'quantity', 'price']);
+                },
+                'items.product' => function ($query) {
+                    $query->select(['id', 'name', 'slug', 'price', 'image']);
+                },
+            ])
+            ->select(['id', 'user_id', 'total_price', 'status', 'shipping_address', 'created_at'])
+            ->findOrFail($order->id);
 
         return response()->json([
             'success' => true,
