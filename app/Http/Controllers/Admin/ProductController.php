@@ -13,7 +13,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->paginate(10);
+        $products = Product::with('category')
+            ->latest() // Order by created_at DESC (newest first)
+            ->paginate(10);
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -43,7 +46,7 @@ class ProductController extends Controller
         Product::create($validated);
 
         return redirect()->route('admin.products.index')
-                       ->with('success', 'Product created successfully!');
+            ->with('success', 'Product created successfully!');
     }
 
     public function edit(Product $product)
@@ -76,7 +79,7 @@ class ProductController extends Controller
         $product->update($validated);
 
         return redirect()->route('admin.products.index')
-                       ->with('success', 'Product updated successfully!');
+            ->with('success', 'Product updated successfully!');
     }
 
     public function destroy(Product $product)
@@ -88,6 +91,6 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('admin.products.index')
-                       ->with('success', 'Product deleted successfully!');
+            ->with('success', 'Product deleted successfully!');
     }
 }

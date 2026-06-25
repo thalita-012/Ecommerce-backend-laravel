@@ -15,26 +15,30 @@ use App\Http\Controllers\API\ReviewController;
 */
 
 Route::middleware('api')->group(function () {
-    // Public Routes (No Authentication Required)
+
+    // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
 
+    // Products
     Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::get('/products/search', [ProductController::class, 'search']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
 
-    // Auth Routes (Public)
+    // Authentication
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login', [AuthController::class, 'login']);
 
+    // Reviews
     Route::get('/products/{product}/reviews', [ReviewController::class, 'index']);
 
-    // Protected Auth Routes
+    // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
+
         Route::get('/auth/profile', [AuthController::class, 'profile']);
-        Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::put('/auth/profile', [AuthController::class, 'updateProfile']);
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
 
         Route::get('/wishlist', [WishlistController::class, 'index']);
         Route::post('/wishlist', [WishlistController::class, 'store']);

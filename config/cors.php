@@ -25,12 +25,10 @@ return [
     | IMPORTANT: In production, replace with your actual domain!
     */
     'allowed_origins' => [
-        'localhost:3000',      // Vue development
-        '127.0.0.1:3000',      // Vue development (alternative)
-        'localhost:8000',      // Laravel development
-        '127.0.0.1:8000',      // Laravel development (alternative)
-        'yourdomain.com',      // Production domain
-        'www.yourdomain.com',  // Production domain with www
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
     ],
 
     /*
