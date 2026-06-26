@@ -122,5 +122,12 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+        /*
+    |--------------------------------------------------------------------------
+    | PHP Memory Configuration
+    |--------------------------------------------------------------------------
+    */
+    'memory_limit' => env('MEMORY_LIMIT', '512M'),
+    
 
 ];

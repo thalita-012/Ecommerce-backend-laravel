@@ -7,11 +7,31 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
     /**
-     * Register a new user
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     operationId="registerUser",
+     *     tags={"Auth"},
+     *     summary="Register a new user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RegisterRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function register(Request $request)
     {
@@ -39,7 +59,26 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     operationId="loginUser",
+     *     tags={"Auth"},
+     *     summary="Login an existing user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/LoginRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation or credentials error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function login(Request $request)
     {
@@ -67,7 +106,19 @@ class AuthController extends Controller
     }
 
     /**
-     * Get current user profile
+     * @OA\Get(
+     *     path="/api/auth/profile",
+     *     operationId="getProfile",
+     *     tags={"Auth"},
+     *     summary="Get current profile",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Authenticated user profile",
+     *         @OA\JsonContent(ref="#/components/schemas/ProfileResponse")
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function profile(Request $request)
     {
@@ -78,7 +129,19 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user (revoke token)
+     * @OA\Post(
+     *     path="/api/auth/logout",
+     *     operationId="logoutUser",
+     *     tags={"Auth"},
+     *     summary="Logout current session",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout successful",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function logout(Request $request)
     {
@@ -91,7 +154,27 @@ class AuthController extends Controller
     }
 
     /**
-     * Update profile
+     * @OA\Put(
+     *     path="/api/auth/profile",
+     *     operationId="updateProfile",
+     *     tags={"Auth"},
+     *     summary="Update profile",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UpdateProfileRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated",
+     *         @OA\JsonContent(ref="#/components/schemas/ProfileResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function updateProfile(Request $request)
     {
@@ -110,7 +193,27 @@ class AuthController extends Controller
     }
 
     /**
-     * Change password
+     * @OA\Post(
+     *     path="/api/auth/change-password",
+     *     operationId="changePassword",
+     *     tags={"Auth"},
+     *     summary="Change account password",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ChangePasswordRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password changed successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation or current password error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function changePassword(Request $request)
     {

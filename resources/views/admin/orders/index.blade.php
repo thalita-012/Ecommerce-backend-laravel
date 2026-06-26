@@ -123,7 +123,7 @@
                 <tr>
                     <td class="fw-bold text-dark">#{{ $order->id }}</td>
                     <td class="fw-medium">{{ $order->user->name }}</td>
-                    <td>{{ $order->items->count() }} item{{ $order->items->count() === 1 ? '' : 's' }}</td>
+                    <td>{{ $order->items_count }} item{{ $order->items_count === 1 ? '' : 's' }}</td>
                     <td class="fw-bold text-dark">${{ number_format($order->total_price, 2) }}</td>
                     <td>
                         <span class="badge-pill {{ $order->status === 'completed' ? 'badge-success-soft' : ($order->status === 'pending' ? 'badge-warning-soft' : 'badge-danger-soft') }}">

@@ -6,11 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\Review;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
 class ReviewController extends Controller
 {
     /**
-     * Get reviews for a product
+     * @OA\Get(
+     *     path="/api/products/{product}/reviews",
+     *     operationId="listProductReviews",
+     *     tags={"Reviews"},
+     *     summary="Get reviews for a product",
+     *     @OA\Parameter(
+     *         name="product",
+     *         in="path",
+     *         required=true,
+     *         description="Product ID",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Paginated product reviews",
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewPageResponse")
+     *     ),
+     *     @OA\Response(response=404, description="Product not found")
+     * )
      */
     public function index(Product $product)
     {
@@ -23,7 +42,34 @@ class ReviewController extends Controller
     }
 
     /**
-     * Create a review (authenticated users only)
+     * @OA\Post(
+     *     path="/api/products/{product}/reviews",
+     *     operationId="createProductReview",
+     *     tags={"Reviews"},
+     *     summary="Create a review for a purchased product",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="product",
+     *         in="path",
+     *         required=true,
+     *         description="Product ID",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Review posted successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation or business rule error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function store(Request $request, Product $product)
     {
@@ -74,7 +120,35 @@ class ReviewController extends Controller
     }
 
     /**
-     * Update review
+     * @OA\Put(
+     *     path="/api/reviews/{review}",
+     *     operationId="updateReview",
+     *     tags={"Reviews"},
+     *     summary="Update an existing review",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="review",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review updated successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/ReviewResponse")
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized"),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function update(Request $request, Review $review)
     {
@@ -100,7 +174,27 @@ class ReviewController extends Controller
     }
 
     /**
-     * Delete review
+     * @OA\Delete(
+     *     path="/api/reviews/{review}",
+     *     operationId="deleteReview",
+     *     tags={"Reviews"},
+     *     summary="Delete a review",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="review",
+     *         in="path",
+     *         required=true,
+     *         description="Review ID",
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Review deleted successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     ),
+     *     @OA\Response(response=403, description="Unauthorized"),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function destroy(Request $request, Review $review)
     {

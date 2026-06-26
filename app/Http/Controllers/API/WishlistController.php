@@ -5,11 +5,24 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
 class WishlistController extends Controller
 {
     /**
-     * Get user's wishlist
+     * @OA\Get(
+     *     path="/api/wishlist",
+     *     operationId="listWishlist",
+     *     tags={"Wishlist"},
+     *     summary="Get the authenticated user's wishlist",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Wishlist list",
+     *         @OA\JsonContent(ref="#/components/schemas/WishlistListResponse")
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function index(Request $request)
     {
@@ -31,7 +44,31 @@ class WishlistController extends Controller
     }
 
     /**
-     * Add product to wishlist
+     * @OA\Post(
+     *     path="/api/wishlist",
+     *     operationId="addWishlist",
+     *     tags={"Wishlist"},
+     *     summary="Add a product to the wishlist",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"product_id"},
+     *             @OA\Property(property="product_id", type="integer", example=10)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Added to wishlist",
+     *         @OA\JsonContent(ref="#/components/schemas/WishlistItemResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation or duplicate item error",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -66,7 +103,26 @@ class WishlistController extends Controller
     }
 
     /**
-     * Remove from wishlist
+     * @OA\Delete(
+     *     path="/api/wishlist/{wishlist}",
+     *     operationId="removeWishlist",
+     *     tags={"Wishlist"},
+     *     summary="Remove an item from the wishlist",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="wishlist",
+     *         in="path",
+     *         required=true,
+     *         description="Wishlist item ID",
+     *         @OA\Schema(type="integer", example=201)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Removed from wishlist",
+     *         @OA\JsonContent(ref="#/components/schemas/MessageResponse")
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function destroy(Wishlist $wishlist, Request $request)
     {
@@ -84,7 +140,26 @@ class WishlistController extends Controller
     }
 
     /**
-     * Check if product is in wishlist
+     * @OA\Get(
+     *     path="/api/wishlist/check/{productId}",
+     *     operationId="checkWishlist",
+     *     tags={"Wishlist"},
+     *     summary="Check if a product is in the wishlist",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="productId",
+     *         in="path",
+     *         required=true,
+     *         description="Product ID",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Wishlist status",
+     *         @OA\JsonContent(ref="#/components/schemas/CheckWishlistResponse")
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
      */
     public function check(Request $request, $productId)
     {
