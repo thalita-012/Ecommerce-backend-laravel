@@ -98,7 +98,8 @@
                     <td class="email-text">{{ $user->email }}</td>
                     <td>
                         <span class="badge-counter-soft">
-                            {{ $user->orders->count() }} order{{ $user->orders->count() === 1 ? '' : 's' }}
+                            {{-- Use the SQL aggregate instead of loading the full orders relation. --}}
+                            {{ $user->orders_count }} order{{ $user->orders_count === 1 ? '' : 's' }}
                         </span>
                     </td>
                     <td>{{ $user->created_at->format('M d, Y') }}</td>

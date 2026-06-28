@@ -109,7 +109,7 @@
         <table class="table table-modern mb-0">
             <thead>
                 <tr>
-                    <th style="width: 12%;">Order ID</th>
+                    <th style="width: 12%;">Order #</th>
                     <th style="width: 23%;">Customer</th>
                     <th style="width: 15%;">Items Count</th>
                     <th style="width: 15%;">Total Price</th>
@@ -121,7 +121,7 @@
             <tbody>
                 @forelse($orders as $order)
                 <tr>
-                    <td class="fw-bold text-dark">#{{ $order->id }}</td>
+                    <td class="fw-bold text-dark">#{{ ($orders->currentPage() - 1) * $orders->perPage() + $loop->iteration }}</td>
                     <td class="fw-medium">{{ $order->user->name }}</td>
                     <td>{{ $order->items_count }} item{{ $order->items_count === 1 ? '' : 's' }}</td>
                     <td class="fw-bold text-dark">${{ number_format($order->total_price, 2) }}</td>

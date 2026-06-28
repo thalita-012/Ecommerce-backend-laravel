@@ -40,7 +40,7 @@ class OrderController extends Controller
             'items' => 'required|array',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
-            'shipping_address' => 'required|string',
+            'shipping_address' => 'required',
         ]);
 
         try {
@@ -70,11 +70,15 @@ class OrderController extends Controller
                 $product->decrement('stock', $item['quantity']);
             }
 
+            $shippingAddressStr = is_array($validated['shipping_address']) 
+                ? json_encode($validated['shipping_address']) 
+                : (string) $validated['shipping_address'];
+
             // Create order
             $order = $request->user()->orders()->create([
                 'total_price' => $totalPrice,
                 'status' => 'pending',
-                'shipping_address' => $validated['shipping_address'],
+                'shipping_address' => $shippingAddressStr,
             ]);
 
             // Create order items
@@ -122,8 +126,7 @@ class OrderController extends Controller
     {
         $orders = $request->user()
             ->orders()
-            ->select(['id', 'user_id', 'total_price', 'status', 'shipping_address', 'created_at'])
-            ->withCount('items')
+            ->select(['id', 'user_id', 'total_price', 'status', 'created_at'])
             ->latest()
             ->paginate(10);
 

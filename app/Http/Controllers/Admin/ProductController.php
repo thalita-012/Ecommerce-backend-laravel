@@ -13,7 +13,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')
+        // Load only the category fields the table needs.
+        $products = Product::query()
+            ->select(['id', 'name', 'slug', 'price', 'stock', 'image', 'category_id', 'created_at'])
+            ->with('category:id,name')
             ->latest() // Order by created_at DESC (newest first)
             ->paginate(10);
 
@@ -22,7 +25,11 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        // Only fetch the columns needed for the dropdown.
+        $categories = Category::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -51,7 +58,11 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        // Keep edit form data light for faster rendering.
+        $categories = Category::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
@@ -30,9 +31,7 @@ Route::prefix('admin')->group(function () {
         Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
         // Dashboard
-        Route::get('dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Categories CRUD
         Route::resource('categories', CategoryController::class, ['as' => 'admin']);

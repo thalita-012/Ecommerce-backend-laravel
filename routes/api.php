@@ -27,7 +27,7 @@ Route::middleware('api')->group(function () {
 
     // Authentication
     Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
 
     // Reviews
     Route::get('/products/{product}/reviews', [ReviewController::class, 'index']);
@@ -42,8 +42,8 @@ Route::middleware('api')->group(function () {
 
         Route::get('/wishlist', [WishlistController::class, 'index']);
         Route::post('/wishlist', [WishlistController::class, 'store']);
-        Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
         Route::get('/wishlist/check/{productId}', [WishlistController::class, 'check']);
+        Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy']);
 
         Route::get('/orders', [OrderController::class, 'index']);
         Route::post('/orders', [OrderController::class, 'store']);

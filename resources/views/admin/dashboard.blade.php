@@ -30,7 +30,6 @@
             background: #ffffff;
             box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.02);
             padding: 1.1rem 1.25rem;
-            /* Reduced padding */
             height: 100%;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
@@ -40,7 +39,6 @@
             box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.06);
         }
 
-        /* Highlight Featured Card Styling (Matches 'Total Projects' block in blue) */
         .stat-card-featured {
             background: linear-gradient(135deg, #024cab 0%, #002d66 100%);
             border: none;
@@ -54,40 +52,20 @@
             color: #ffffff;
         }
 
-        .stat-card-featured .stat-subtext {
-            color: rgba(255, 255, 255, 0.9);
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-
         .stat-label {
             font-size: 0.85rem;
-            /* Smaller font label */
             font-weight: 600;
             color: #475569;
             margin-bottom: 0.75rem;
-            /* Tighter margin */
         }
 
         .stat-number {
             font-size: 2rem;
-            /* Reduced from 2.75rem for a cleaner size */
             font-weight: 700;
             letter-spacing: -1px;
             line-height: 1;
             color: #0f172a;
             margin-bottom: 0.75rem;
-        }
-
-        .stat-subtext {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.7rem;
-            /* Smaller micro-text */
-            font-weight: 500;
-            border-radius: 6px;
-            background-color: #f1f5f9;
-            color: #64748b;
         }
 
         /* Content Area Layout Containers */
@@ -113,7 +91,6 @@
             margin: 0;
         }
 
-        /* Minimal UI Table Configurations */
         .table-modern th {
             font-size: 0.75rem;
             font-weight: 600;
@@ -137,7 +114,6 @@
             border-bottom: none;
         }
 
-        /* App Pill State Variants */
         .badge-pill {
             padding: 0.35rem 0.7rem;
             font-weight: 600;
@@ -162,17 +138,39 @@
     </style>
 
     <div class="page-header-wrapper">
-        <h2 class="page-title">Dashboard</h2>
-        <div class="page-subtitle">Plan, prioritize, and accomplish your tasks with ease.</div>
+        <h2 class="page-title">Dashboard Overview</h2>
+        <div class="page-subtitle">Track live customer checkout transactions and inventory levels.</div>
     </div>
+
+    @if(isset($lowStockProducts) && $lowStockProducts->count() > 0)
+    <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4 p-3" style="background: #fff8e6; border-left: 5px solid #f59e0b !important;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-2 rounded-circle bg-warning text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    ⚠️
+                </div>
+                <div>
+                    <h6 class="mb-1 fw-bold text-dark">Inventory Restock Alert</h6>
+                    <p class="mb-0 text-muted small">The following <strong>{{ $lowStockProducts->count() }}</strong> product(s) are low in stock. Please restock to ensure continuous customer checkout.</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                @foreach($lowStockProducts as $lowProd)
+                    <a href="{{ route('admin.products.edit', $lowProd) }}" class="btn btn-sm btn-outline-warning text-dark fw-semibold bg-white border-warning-subtle">
+                        {{ $lowProd->name }} ({{ $lowProd->stock }} left) → Restock
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
             <div class="card stat-card stat-card-featured">
                 <div class="card-body p-0">
                     <div class="stat-label">Total Products</div>
-                    <h2 class="stat-number">{{ \App\Models\Product::count() }}</h2>
-
+                    <h2 class="stat-number">{{ $totalProducts }}</h2>
                 </div>
             </div>
         </div>
@@ -181,8 +179,7 @@
             <div class="card stat-card">
                 <div class="card-body p-0">
                     <div class="stat-label">Total Categories</div>
-                    <h2 class="stat-number">{{ \App\Models\Category::count() }}</h2>
-
+                    <h2 class="stat-number">{{ $totalCategories }}</h2>
                 </div>
             </div>
         </div>
@@ -191,7 +188,7 @@
             <div class="card stat-card">
                 <div class="card-body p-0">
                     <div class="stat-label">Total Orders</div>
-                    <h2 class="stat-number">{{ \App\Models\Order::count() }}</h2>
+                    <h2 class="stat-number">{{ $totalOrders }}</h2>
                 </div>
             </div>
         </div>
@@ -200,8 +197,7 @@
             <div class="card stat-card">
                 <div class="card-body p-0">
                     <div class="stat-label">Total Users</div>
-                    <h2 class="stat-number">{{ \App\Models\User::where('is_admin', false)->count() }}</h2>
-
+                    <h2 class="stat-number">{{ $totalUsers }}</h2>
                 </div>
             </div>
         </div>
@@ -211,7 +207,7 @@
         <div class="col-lg-6">
             <div class="card content-card border-0">
                 <div class="card-header">
-                    <h5>Recent Orders</h5>
+                    <h5>Recent Customer Orders</h5>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-modern mb-0">
@@ -224,9 +220,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (\App\Models\Order::latest()->limit(5)->get() as $order)
+                            @forelse ($recentOrders as $index => $order)
                                 <tr>
-                                    <td class="fw-bold text-dark">#{{ $order->id }}</td>
+                                    <td class="fw-bold text-dark">#{{ $index+1}}</td>
                                     <td class="fw-medium">{{ $order->user->name }}</td>
                                     <td class="fw-bold text-dark">${{ number_format($order->total_price, 2) }}</td>
                                     <td>
@@ -236,7 +232,11 @@
                                         </span>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">No recent orders yet.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -246,7 +246,7 @@
         <div class="col-lg-6">
             <div class="card content-card border-0">
                 <div class="card-header">
-                    <h5>Top Products</h5>
+                    <h5>Inventory Overview</h5>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-modern mb-0">
@@ -258,17 +258,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (\App\Models\Product::latest()->limit(5)->get() as $product)
+                            @foreach ($topProducts as $product)
                                 <tr>
                                     <td class="fw-bold text-dark">{{ $product->name }}</td>
                                     <td class="fw-medium">${{ number_format($product->price, 2) }}</td>
                                     <td>
                                         @if ($product->stock > 10)
-                                            <span class="badge-pill badge-success-soft">{{ $product->stock }}
-                                                available</span>
+                                            <span class="badge-pill badge-success-soft">{{ $product->stock }} available</span>
                                         @elseif($product->stock > 0)
-                                            <span class="badge-pill badge-warning-soft">{{ $product->stock }} low
-                                                stock</span>
+                                            <span class="badge-pill badge-warning-soft">{{ $product->stock }} low stock</span>
                                         @else
                                             <span class="badge-pill badge-danger-soft">Out of stock</span>
                                         @endif

@@ -274,10 +274,12 @@
                             <td>{{ $product->category->name }}</td>
                             <td class="fw-bold text-dark">${{ number_format($product->price, 2) }}</td>
                             <td>
-                                @if ($product->stock > 0)
-                                    <span class="badge-pill badge-success-soft">{{ $product->stock }} units</span>
-                                @else
+                                @if ($product->stock <= 0)
                                     <span class="badge-pill badge-danger-soft">Out of Stock</span>
+                                @elseif ($product->stock <= 5)
+                                    <span class="badge-pill badge-warning-soft">Low Stock ({{ $product->stock }} left)</span>
+                                @else
+                                    <span class="badge-pill badge-success-soft">{{ $product->stock }} units</span>
                                 @endif
                             </td>
                             <td>{{ $product->created_at->format('M d, Y') }}</td>
