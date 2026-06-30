@@ -42,6 +42,7 @@ Route::prefix('admin')->group(function () {
         // Orders
         Route::get('orders', [OrderController::class, 'index'])->name('admin.orders.index');
         Route::get('orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+        Route::patch('orders/{order}', [OrderController::class, 'update'])->name('admin.orders.update');
 
         // Users
         Route::get('users', [UserController::class, 'index'])->name('admin.users.index');

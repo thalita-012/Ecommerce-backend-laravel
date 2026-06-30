@@ -173,6 +173,12 @@
     <div class="page-subtitle">Detailed manifest of customer products and checkout shipping verification.</div>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4 p-3" style="background-color: #e6f7ed; color: #1ea956;">
+        <strong>✓ Success!</strong> {{ session('success') }}
+    </div>
+@endif
+
 <div class="row g-4 mb-4">
     <div class="col-md-6">
         <div class="card content-card border-0">
@@ -209,6 +215,20 @@
                         <span class="info-label">Aggregate Gross Total</span>
                         <span class="info-value text-dark fw-bold">${{ number_format($order->total_price, 2) }}</span>
                     </li>
+                    <li class="pt-3 border-top mt-2 flex-column align-items-stretch border-0">
+                        <span class="info-label mb-2 d-block">Update Order Status</span>
+                        <form action="{{ route('admin.orders.update', $order) }}" method="POST" class="d-flex gap-2">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" class="form-select form-select-sm fw-semibold" style="border-radius: 8px; border-color: #cbd5e1;">
+                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
+                                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm text-white fw-bold px-3" style="background-color: #024cab; border-radius: 8px;">Save</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -221,9 +241,36 @@
             </div>
             <div class="card-body p-4">
                 @if($order->shipping_address)
-                    <div class="address-box">
-                        {!! nl2br(e($order->shipping_address)) !!}
-                    </div>
+                    @php
+                        $address = $order->shipping_address;
+                        $addressData = null;
+                        if (is_string($address)) {
+                            $decoded = json_decode($address, true);
+                            if (json_last_error() === JSON_ERROR_NONE) {
+                                $addressData = $decoded;
+                            }
+                        } elseif (is_array($address)) {
+                            $addressData = $address;
+                        }
+                    @endphp
+
+                    @if($addressData)
+                        <div class="address-box border-0 bg-light p-3 rounded-3" style="line-height: 1.8;">
+                            <div class="mb-1"><strong>Name:</strong> {{ $addressData['full_name'] ?? 'N/A' }}</div>
+                            <div class="mb-1"><strong>Email:</strong> {{ $addressData['email'] ?? 'N/A' }}</div>
+                            <div class="mb-1"><strong>Phone:</strong> {{ $addressData['phone'] ?? 'N/A' }}</div>
+                            <div class="mb-1"><strong>Address:</strong> {{ $addressData['address_line1'] ?? $addressData['street'] ?? 'N/A' }}</div>
+                            @if(!empty($addressData['address_line2']))
+                                <div class="mb-1"><strong>Address Line 2:</strong> {{ $addressData['address_line2'] }}</div>
+                            @endif
+                            <div class="mb-1"><strong>City/State/Zip:</strong> {{ $addressData['city'] ?? 'N/A' }}, {{ $addressData['state'] ?? 'N/A' }} {{ $addressData['postal_code'] ?? $addressData['zip'] ?? '' }}</div>
+                            <div class="mb-0"><strong>Country:</strong> {{ $addressData['country'] ?? 'N/A' }}</div>
+                        </div>
+                    @else
+                        <div class="address-box">
+                            {!! nl2br(e($order->shipping_address)) !!}
+                        </div>
+                    @endif
                 @else
                     <div class="text-muted py-4 font-size-0.9rem">
                         No physical destination delivery parameters provided for this checkout sequence.

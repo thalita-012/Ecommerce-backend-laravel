@@ -70,8 +70,8 @@ class OrderController extends Controller
                 $product->decrement('stock', $item['quantity']);
             }
 
-            $shippingAddressStr = is_array($validated['shipping_address']) 
-                ? json_encode($validated['shipping_address']) 
+            $shippingAddressStr = is_array($validated['shipping_address'])
+                ? json_encode($validated['shipping_address'])
                 : (string) $validated['shipping_address'];
 
             // Create order

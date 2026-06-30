@@ -33,4 +33,17 @@ class OrderController extends Controller
         ]);
         return view('admin.orders.show', compact('order'));
     }
+
+    public function update(\Illuminate\Http\Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,processing,completed,cancelled',
+        ]);
+
+        $order->update($validated);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'Order status updated successfully.');
+    }
 }
