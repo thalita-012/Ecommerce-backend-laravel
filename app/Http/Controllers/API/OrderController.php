@@ -88,6 +88,12 @@ class OrderController extends Controller
 
             DB::commit();
 
+            try {
+                app(\App\Services\TelegramService::class)->sendOrderNotification($order);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send Telegram notification for Order #{$order->id}: " . $e->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Order created successfully',

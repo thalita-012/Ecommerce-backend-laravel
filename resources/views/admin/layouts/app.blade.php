@@ -57,6 +57,10 @@
             min-height: calc(100vh - 61px);
             padding: 1.5rem 1rem;
             border-right: 1px solid var(--border-color);
+            position: sticky;
+            top: 61px;
+            height: calc(100vh - 61px);
+            overflow-y: auto;
         }
 
         .list-group-item {

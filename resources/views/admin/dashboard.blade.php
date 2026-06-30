@@ -222,7 +222,7 @@
                         <tbody>
                             @forelse ($recentOrders as $index => $order)
                                 <tr>
-                                    <td class="fw-bold text-dark">#{{ $index+1}}</td>
+                                    <td class="fw-bold text-dark">#{{ $order->id }}</td>
                                     <td class="fw-medium">{{ $order->user->name }}</td>
                                     <td class="fw-bold text-dark">${{ number_format($order->total_price, 2) }}</td>
                                     <td>

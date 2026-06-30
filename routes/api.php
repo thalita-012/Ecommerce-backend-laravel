@@ -16,6 +16,9 @@ use App\Http\Controllers\API\ReviewController;
 
 Route::middleware('api')->group(function () {
 
+    // Telegram Webhook
+    Route::post('/telegram/webhook', [App\Http\Controllers\TelegramWebhookController::class, 'handle']);
+
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
